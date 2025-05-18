@@ -338,6 +338,20 @@ def load_all_records(base_dir="data/records"):
             records.append(df)
     return pd.concat(records, ignore_index=True)
 
+
+def update_team_records():
+    today = datetime.date.today().isoformat()
+
+    # 기존 CSV 경로 및 새 저장 경로
+    raw_path = "kbo_between_team.csv"  # 원본 or 수동 갱신
+    save_dir = "record_history"
+    os.makedirs(save_dir, exist_ok=True)
+
+    df = pd.read_csv(raw_path)
+    save_path = os.path.join(save_dir, f"record_{today}.csv")
+    df.to_csv(save_path, index=False)
+    print(f"[{today}] 기록 저장 완료: {save_path}")
+    
 if __name__ == "__main__":
     save_daily_record()
     
