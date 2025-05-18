@@ -1,6 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import datetime
+import os
+import pandas as pd
 
 url_person_hitter = "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx?sort=HRA_RT"
 
@@ -315,22 +318,26 @@ def save_to_csv(data, filename="kbo.csv"):
                 writer.writerow(data[key])
                 
             #writer.writerows(data)
-if __name__ == "__main__":
-    
-    #runner = fetch_kbo_runner_data(url_team_hitter)
-    #defense = fetch_kbo_defense_data(url_team_hitter)
-    #pitcher = fetch_kbo_pitcher_data(url_team_hitter)
-    #hitter = fetch_kbo_hitter_data(url_team_hitter)
+
+def save_daily_record(base_dir="data/records"):
+    today = datetime.date.today().isoformat()
     
     recent_winning = fetch_kbo_recent_winning_data(url_recent_winning)
     between_team = fetch_kbo_between_team_data(url_recent_winning)
     
-    #save_to_csv(hitter,filename="kbo_team_hitters.csv")
-    #save_to_csv(pitcher,filename="kbo_team_pitchers.csv")
-    #save_to_csv(defense,filename="kbo_team_defenses.csv")
-    #save_to_csv(runner,filename="kbo_team_runners.csv")
-    save_to_csv(recent_winning,filename="kbo_recent_winning.csv")
-    save_to_csv(between_team,filename="kbo_between_team.csv")
+    save_to_csv(between_team,filename=f"{base_dir}/kbo_between_team_{today}.csv")
+    save_to_csv(recent_winning,filename=f"{base_dir}/kbo_recent_winning_{today}.csv")
     
+def load_all_records(base_dir="data/records"):
+    records = []
+    for file in sorted(os.listdir(base_dir)):
+        if file.endswith(".csv"):
+            date = file.split("_")[-1].replace(".csv", "")
+            df = pd.read_csv(os.path.join(base_dir, file))
+            df["date"] = date
+            records.append(df)
+    return pd.concat(records, ignore_index=True)
+
+if __name__ == "__main__":
+    save_daily_record()
     
-    #print(f"{len(hitters)}명의 선수 데이터를 kbo_hitters.csv로 저장했습니다.")
