@@ -331,7 +331,7 @@ def save_daily_record(base_dir="data/records"):
     
     git_commit_and_push(today)
     
-def git_commit_and_push(, date_str: str):
+def git_commit_and_push(date_str: str):
     try:
         subprocess.run(["git", "add", "."], check=True)
         subprocess.run(["git", "commit", "-m", f"자동 업데이트: {date_str} 전적 데이터"], check=True)
