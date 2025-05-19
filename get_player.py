@@ -4,6 +4,7 @@ import csv
 import datetime
 import os
 import pandas as pd
+import subprocess
 
 url_person_hitter = "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx?sort=HRA_RT"
 
@@ -328,6 +329,16 @@ def save_daily_record(base_dir="data/records"):
     save_to_csv(between_team,filename=f"{base_dir}/kbo_between_team_{today}.csv")
     save_to_csv(recent_winning,filename=f"{base_dir}/kbo_recent_winning_{today}.csv")
     
+    
+def git_commit_and_push(file_path: str, date_str: str):
+    try:
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", f"자동 업데이트: {date_str} 전적 데이터"], check=True)
+        subprocess.run(["git", "push"], check=True)
+        print(f"[{date_str}] Git 커밋 및 푸시 완료")
+    except subprocess.CalledProcessError as e:
+        print(f"[{date_str}] Git 오류 발생: {e}")
+        
 def load_all_records(base_dir="data/records"):
     records = []
     for file in sorted(os.listdir(base_dir)):
